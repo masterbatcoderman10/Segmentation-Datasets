@@ -45,9 +45,10 @@ class MultiSegmentationDataset(Dataset):
         for i, key in enumerate(self.masks_dict.keys()):
             mask_path = self.mask_paths[key][idx]
             mask[i+1] = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+            mask[i+1] = np.clip(mask[i+1], 0, 1)
             background = background - mask[i+1]
         
-        background = np.clip(background, 0, None)
+        background = np.clip(background, 0, 1)
         mask[0] = background
 
         #convert to tensor
