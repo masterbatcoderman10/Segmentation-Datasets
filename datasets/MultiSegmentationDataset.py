@@ -19,7 +19,9 @@ class MultiSegmentationDataset(Dataset):
         mask_dir (str, optional): Directory path containing the masks. Required for mode 0 and 1.
         masks_dict (dict, optional): Dictionary mapping class names to mask files. Required for mode 1.
         transform (callable, optional): Transform function to be applied to images.
-        classes (list, optional): List of class names, required for mode 2.
+        classes (list | int, optional): 
+                    - List of class names, required for mode 2. 
+                    - Number of classes or list of class names if used with mode 0.
 
     """
 
