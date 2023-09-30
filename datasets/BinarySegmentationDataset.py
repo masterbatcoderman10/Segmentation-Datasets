@@ -16,9 +16,9 @@ class BinarySegmentationDataset(Dataset):
         self.images = os.listdir(img_dir)
 
         #create image paths
-        self.image_paths = [os.path.join(self.img_dir, image) for image in os.listdir(self.img_dir)]
+        self.image_paths = [os.path.join(self.img_dir, image) for image in sorted(os.listdir(self.img_dir))]
         #create mask paths
-        self.mask_paths = [os.path.join(self.mask_dir, mask) for mask in os.listdir(self.mask_dir)]
+        self.mask_paths = [os.path.join(self.mask_dir, mask) for mask in sorted(os.listdir(self.mask_dir))]
     
     def __len__(self):
         return len(self.images)
@@ -33,6 +33,8 @@ class BinarySegmentationDataset(Dataset):
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         else:
             image = np.expand_dims(image, axis=-1)
+
+        image = image.transpose(2, 0, 1)
         #apply transforms
         if self.transform is not None:
             image = self.transform(image)
@@ -46,5 +48,6 @@ class BinarySegmentationDataset(Dataset):
             mask = self.mask_transform(mask)
         else:
             mask = torch.tensor(mask, dtype=torch.float32)
+            mask = torch.clamp(mask, 0, 1)
 
         return image, mask
