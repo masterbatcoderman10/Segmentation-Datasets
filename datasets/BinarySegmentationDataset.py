@@ -7,6 +7,16 @@ from torchvision import transforms
 import os
 
 class BinarySegmentationDataset(Dataset):
+    """
+    BinarySegmentationDataset Class
+
+    Args:
+        img_dir (str): Directory containing the images.
+        mask_dir (str): Directory containing the masks.
+        transform (callable, optional): Transform to be applied on the images.
+        mask_transform (callable, optional): Transform to be applied on the masks.
+
+    """
 
     def __init__(self, img_dir, mask_dir, transform=None, mask_transform=None):
         self.img_dir = img_dir
@@ -21,9 +31,24 @@ class BinarySegmentationDataset(Dataset):
         self.mask_paths = [os.path.join(self.mask_dir, mask) for mask in sorted(os.listdir(self.mask_dir))]
     
     def __len__(self):
+        """
+        Returns the total number of samples in the dataset.
+
+        Returns:
+            int: Total number of samples in the dataset.
+        """
         return len(self.images)
     
     def __getitem__(self, idx):
+        """
+        Fetches a single sample from the dataset.
+
+        Args:
+            idx (int): Index of the sample to fetch.
+
+        Returns:
+            tuple: A tuple containing the image and the mask tensors.
+        """
 
         img_path = self.image_paths[idx]
         #read image

@@ -7,8 +7,38 @@ import cv2
 from torchvision import transforms
 
 class MultiSegmentationDataset(Dataset):
+    """
+    MultiSegmentationDataset Class for handling multi-class segmentation datasets.
+
+    Args:
+        image_dir (str): Directory path containing the images.
+        mode (int): Operational mode of the dataset. 
+                    - 0: Single mask file for each image, with different classes encoded by pixel values.
+                    - 1: Multiple mask files for each image, each belonging to a different class, stored in separate class directories.
+                    - 2: Single directory for each image containing multiple mask files, each belonging to a different class.
+        mask_dir (str, optional): Directory path containing the masks. Required for mode 0 and 1.
+        masks_dict (dict, optional): Dictionary mapping class names to mask files. Required for mode 1.
+        transform (callable, optional): Transform function to be applied to images.
+        classes (list, optional): List of class names, required for mode 2.
+
+    """
 
     def __init__(self, image_dir, mode = 0 | 1 | 2, mask_dir=None, masks_dict=None, transform=None, classes=None):
+        """
+    MultiSegmentationDataset Class for handling multi-class segmentation datasets.
+
+    Args:
+        image_dir (str): Directory path containing the images.
+        mode (int): Operational mode of the dataset. 
+                    - 0: Single mask file for each image, with different classes encoded by pixel values.
+                    - 1: Multiple mask files for each image, each belonging to a different class, stored in separate class directories.
+                    - 2: Single directory for each image containing multiple mask files, each belonging to a different class.
+        mask_dir (str, optional): Directory path containing the masks. Required for mode 0 and 1.
+        masks_dict (dict, optional): Dictionary mapping class names to mask files. Required for mode 1.
+        transform (callable, optional): Transform function to be applied to images.
+        classes (list, optional): List of class names, required for mode 2.
+
+    """
         
         self.image_dir = image_dir
         self.mask_dir = mask_dir
@@ -42,6 +72,16 @@ class MultiSegmentationDataset(Dataset):
 
     #this function deal with masks that are essentially black and white images with different values between 0-255 indicating different classes
     def process_mask_for_mode_zero(self, mask_path):
+        """
+        Processes a mask for mode 0.
+        This mode assumes that each image has a corresponding single mask file where different classes are encoded by pixel values.
+
+        Args:
+            mask_path (str): Path to the mask file.
+
+        Returns:
+            torch.Tensor: Processed mask tensor in one-hot encoding.
+        """
 
         mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
         #assert mask only has 2 dimensions, if not then squeeze
@@ -56,6 +96,18 @@ class MultiSegmentationDataset(Dataset):
 
     #this function creates a mask for separate masks belonging to separate directories and processes them into one mask
     def process_mask_for_mode_one(self, idx, H, W):
+        """
+        Processes a mask for mode 1. CURRENTLY UNTESTED.
+        This mode assumes that each image has multiple mask files, each belonging to a different class.
+
+        Args:
+            idx (int): Index of the image and mask.
+            H (int): Height of the image.
+            W (int): Width of the image.
+
+        Returns:
+            torch.Tensor: Processed mask tensor combined from multiple files.
+        """
 
         background = np.ones((H, W))
         mask = np.zeros((self.n_classes+1, H, W))
@@ -73,6 +125,18 @@ class MultiSegmentationDataset(Dataset):
         return mask
     
     def process_mask_for_mode_two(self, idx, H, W):
+        """
+        Processes a mask for mode 2.
+        This mode assumes that each image has a corresponding directory containing multiple mask files, each belonging to a different class.
+
+        Args:
+            idx (int): Index of the image and mask.
+            H (int): Height of the image.
+            W (int): Width of the image.
+
+        Returns:
+            torch.Tensor: Processed mask tensor combined from multiple files in the directory.
+        """
 
         background = np.ones((H, W))
         mask = np.zeros((self.n_classes+1, H, W))
@@ -94,6 +158,15 @@ class MultiSegmentationDataset(Dataset):
         
 
     def __getitem__(self, idx):
+        """
+        Fetches a single sample from the dataset based on the operational mode.
+
+        Args:
+            idx (int): Index of the sample to fetch.
+
+        Returns:
+            tuple: A tuple containing the image and the mask tensors.
+        """
 
         #process image
         img_path = self.image_paths[idx]
