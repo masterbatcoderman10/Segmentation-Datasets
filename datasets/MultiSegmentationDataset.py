@@ -36,7 +36,9 @@ class MultiSegmentationDataset(Dataset):
         mask_dir (str, optional): Directory path containing the masks. Required for mode 0 and 1.
         masks_dict (dict, optional): Dictionary mapping class names to mask files. Required for mode 1.
         transform (callable, optional): Transform function to be applied to images.
-        classes (list, optional): List of class names, required for mode 2.
+        classes (list | int, optional): 
+                    - List of class names, required for mode 2. 
+                    - Number of classes or list of class names if used with mode 0.
 
     """
         
@@ -49,7 +51,11 @@ class MultiSegmentationDataset(Dataset):
         self.image_paths = [os.path.join(self.image_dir, image) for image in sorted(os.listdir(self.image_dir))]
         if mode == 0:
             self.mask_paths = [os.path.join(self.mask_dir, mask) for mask in sorted(os.listdir(self.mask_dir))]
-            self.n_classes = classes
+            assert classes is not None, "classes must be provided for mode 0"
+            if isinstance(classes, int):
+                self.n_classes = classes
+            elif isinstance(classes, list):
+                self.n_classes = len(classes)
         elif mode == 1:
             #for each directory containing masks of a different class, create a list of paths to the masks
             self.mask_paths = {key: [os.path.join(self.mask_dir, mask) for mask in sorted(os.listdir(self.mask_dir))] for key in sorted(self.masks_dict.keys())}
