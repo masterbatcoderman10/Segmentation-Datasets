@@ -76,6 +76,70 @@ classes (list | int, optional):
   - List of class names, required for mode 2. 
   - Number of classes or list of class names if used with mode 0.
 
+#### Expected Directory Structure
+
+Depending on the mode you choose, your dataset directory structure should look like the following:
+
+- Mode 0 (Most common)
+For this mode, you need a single directory for images and another for masks. The mask images should be grayscale, with pixel values representing different classes.
+```
+dataset/
+│
+├── images/
+│   ├── img1.jpg
+│   ├── img2.jpg
+│   └── ...
+│
+└── masks/
+    ├── mask1.png
+    ├── mask2.png
+    └── ...
+```
+
+- Mode 1
+In this mode, you need separate sub-directories for each class inside the mask directory.
+```
+dataset/
+│
+├── images/
+│   ├── img1.jpg
+│   ├── img2.jpg
+│   └── ...
+│
+└── masks/
+    ├── class1/
+    │   ├── mask1_class1.png
+    │   └── ...
+    │
+    ├── class2/
+    │   ├── mask1_class2.png
+    │   └── ...
+    └── ...
+```
+
+- Mode 2
+For this mode, each image should have its own directory within the masks folder. Each of these directories should contain multiple mask files, each belonging to a different class.
+
+```dataset/
+│
+├── images/
+│   ├── img1.jpg
+│   ├── img2.jpg
+│   └── ...
+│
+└── masks/
+    ├── img1/
+    │   ├── mask_class1.png
+    │   ├── mask_class2.png
+    │   └── ...
+    │
+    ├── img2/
+    │   ├── mask_class1.png
+    │   ├── mask_class2.png
+    │   └── ...
+    └── ...
+```
+
 #### Methods
 
 The class provides methods for handling masks in different operational modes: `process_mask_for_mode_zero()`, `process_mask_for_mode_one()`, and `process_mask_for_mode_two()`.
