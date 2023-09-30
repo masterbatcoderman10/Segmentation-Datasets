@@ -22,6 +22,7 @@ git clone https://github.com/masterbatcoderman10/Segmentation-Datasets.git
 
 - Python 3.x
 - PyTorch
+- Torchvision
 - OpenCV
 
 ## Usage
